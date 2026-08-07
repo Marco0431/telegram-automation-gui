@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+config.json
+userbot.session
+userbot.session-journal
+*.session
+*.log
+.venv/
+.vscode/
+启动.bat
