@@ -8,10 +8,10 @@ import traceback
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from config import Config
+from config import Config, _base_dir
 from engine import BotEngine
 
-LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.log")
+LOG_FILE = os.path.join(_base_dir(), "app.log")
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",

@@ -1,8 +1,15 @@
 """配置的读取与保存。所有持久化配置存放在 config.json。"""
 import json
 import os
+import sys
 
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+def _base_dir():
+    """程序所在目录: 源码运行时是项目目录, 打包成 exe 后是 exe 所在目录"""
+    if getattr(sys, "frozen", False):          # PyInstaller 打包后
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
+CONFIG_PATH = os.path.join(_base_dir(), "config.json")
 
 DEFAULTS = {
     # 登录

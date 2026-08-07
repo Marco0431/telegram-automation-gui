@@ -8,3 +8,6 @@ userbot.session-journal
 .venv/
 .vscode/
 启动.bat
+build/
+dist/
+*.spec

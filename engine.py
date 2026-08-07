@@ -7,8 +7,10 @@
 """
 import asyncio
 import logging
+import os
 import queue
 import random
+import sys
 import threading
 import time
 from datetime import datetime, timedelta
@@ -19,6 +21,18 @@ from telethon.errors import (
     PhoneCodeInvalidError,
     SessionPasswordNeededError,
 )
+
+log = logging.getLogger("tgbot")
+
+
+def _base_dir():
+    """程序所在目录: 源码运行时是项目目录, 打包成 exe 后是 exe 所在目录"""
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+SESSION_PATH = os.path.join(_base_dir(), "userbot.session")
 
 log = logging.getLogger("tgbot")
 
@@ -119,7 +133,7 @@ class BotEngine:
         self._emit("status", state="connecting", text="正在连接 Telegram …")
         proxy = self._build_proxy()
         try:
-            self.client = TelegramClient("userbot", api_id, api_hash, proxy=proxy)
+            self.client = TelegramClient(SESSION_PATH, api_id, api_hash, proxy=proxy)
             await self.client.connect()
         except Exception as e:
             self._emit("status", state="connect_failed",
