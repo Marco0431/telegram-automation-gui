@@ -45,7 +45,7 @@ AI 水群 / AI 回复支持任何 OpenAI 兼容接口:
 
 | 字段 | 示例 |
 | --- | --- |
-| Base URL | `https://opencode.ai/zen/go/v1` 或 `https://api.deepseek.com/v1` 等 |
+| Base URL |                   |
 | API Key | 对应服务商提供的密钥 |
 | 模型 | 对应服务商支持的模型 ID,如 `deepseek-v4-flash`、`glm-5.2`、`kimi-k3` |
 
