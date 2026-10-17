@@ -1,0 +1,19 @@
+# Telegram Automation GUI
+
+> A Python desktop GUI for Telegram user-account automation, built with Telethon and Tkinter. 中文：Telegram 个人号定时签到、群聊消息和可选 AI 回复工具。
+
+The interface is Chinese. Features include scheduled and manual check-ins, configurable group-message intervals and active hours, a fixed message pool or AI-generated messages, optional AI replies, HTTP/SOCKS5 proxy configuration, and a system tray. Login uses Telegram API credentials, a phone number, a verification code, and a two-step verification password when required. The app runs as a Telegram user account.
+
+Start from source with `python -m pip install -r requirements.txt`, then `python main.py`; Python with Tkinter is required. AI features use an OpenAI-compatible Chat Completions endpoint and require a provider API key. AI requests send recent group text and sender names to the configured provider. Local config/session files contain sensitive credentials. Use only where group rules permit automation.
+
+## Documentation
+
+- [Repository and quick start](https://github.com/Marco0431/telegram-automation-gui): Chinese setup guide with an English overview, feature list, and data-handling notes.
+- [Configuration example](https://github.com/Marco0431/telegram-automation-gui/blob/main/config.example.json): Public sample settings; its proxy setting is enabled and must be reviewed before use.
+- [Dependencies](https://github.com/Marco0431/telegram-automation-gui/blob/main/requirements.txt): Python packages required to run the application.
+
+## Source
+
+- [GUI entry point](https://github.com/Marco0431/telegram-automation-gui/blob/main/main.py): Tkinter tabs, login controls, configuration, logs, and tray integration.
+- [Automation engine](https://github.com/Marco0431/telegram-automation-gui/blob/main/engine.py): Telethon authentication, scheduling, group messages, and AI requests.
+- [Configuration defaults](https://github.com/Marco0431/telegram-automation-gui/blob/main/config.py): Actual runtime defaults and local configuration persistence.
