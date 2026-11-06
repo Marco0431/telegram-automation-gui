@@ -6,6 +6,20 @@ A Python desktop GUI for Telegram user-account automation: scheduled check-ins, 
 
 **入口 / Start here:** [快速开始](#快速开始--quick-start) · [第一次运行](#第一次运行--first-run) · [常见问题](#常见问题--troubleshooting) · [反馈问题 / Feedback](https://github.com/Marco0431/telegram-automation-gui/issues/new/choose)
 
+## 界面预览 / Interface preview
+
+**登录与代理配置 / Login and proxy settings**
+
+![Telegram GUI 登录与代理设置的未连接演示 / Telegram GUI login and proxy settings, shown disconnected](docs/media/telegram-overview.png)
+
+**切换配置页面 / A tour of the settings tabs**
+
+![依次查看登录、签到和 AI 设置页 / A tour of the login, check-in, and AI settings tabs](docs/media/telegram-tour.gif)
+
+截图与 GIF 使用独立演示配置，只展示页面和设置项：未登录 Telegram、未执行自动化任务，也未调用 AI。接口地址和模型为示例，密钥与目标群为空。
+
+These captures use an isolated demo configuration to show the interface. Telegram is not signed in, no automation tasks are running, and no AI requests are made. The endpoint and model are placeholders; credentials and target groups are empty.
+
 ## 选一个用途 / Choose a workflow
 
 | 想完成的事 / Goal | 从哪里开始 / Start with | 是否需要 AI / AI required |
