@@ -4,11 +4,16 @@
 
 The interface is Chinese. Features include scheduled and manual check-ins, configurable group-message intervals and active hours, a fixed message pool or AI-generated messages, optional AI replies, HTTP/SOCKS5 proxy configuration, and a system tray. Login uses Telegram API credentials, a phone number, a verification code, and a two-step verification password when required. The app runs as a Telegram user account.
 
-Start from source with `python -m pip install -r requirements.txt`, then `python main.py`; Python with Tkinter is required. AI features use an OpenAI-compatible Chat Completions endpoint and require a provider API key. AI requests send recent group text and sender names to the configured provider. Local config/session files contain sensitive credentials. Use only where group rules permit automation.
+Start from source with `python -m pip install -r requirements.txt`, then `python main.py`; Python with Tkinter is required. Start with one permitted check-in group and leave other workflows disabled. The Start button saves all settings tabs; check-ins use the computer's local time with an additional random 0–5 minute delay. The example JSON differs from runtime defaults, including proxy, task switches, and AI provider fields.
+
+AI features use an OpenAI-compatible Chat Completions endpoint and require a provider API key. Automatic AI replies send up to 10 recent messages and scheduled AI chat uses up to 12, including sender names. A manual AI connection test also makes a provider request, even with automatic AI disabled, but does not include group history. Local config/session files contain sensitive credentials. Use only where group rules permit automation. No LICENSE file is currently provided; reuse permission should be confirmed with the maintainer.
 
 ## Documentation
 
 - [Repository and quick start](https://github.com/Marco0431/telegram-automation-gui): Chinese setup guide with an English overview, feature list, and data-handling notes.
+- [First-run walkthrough](https://github.com/Marco0431/telegram-automation-gui#第一次运行--first-run): Set up one check-in group, understand the Start/Stop controls, and check local scheduling.
+- [Troubleshooting](https://github.com/Marco0431/telegram-automation-gui#常见问题--troubleshooting): Tkinter, proxy, task, schedule, and AI connection checks.
+- [Report a problem](https://github.com/Marco0431/telegram-automation-gui/issues/new?template=bug_report.md): Include environment details and a redacted error excerpt, never config or session files.
 - [Configuration example](https://github.com/Marco0431/telegram-automation-gui/blob/main/config.example.json): Public sample settings; its proxy setting is enabled and must be reviewed before use.
 - [Dependencies](https://github.com/Marco0431/telegram-automation-gui/blob/main/requirements.txt): Python packages required to run the application.
 
