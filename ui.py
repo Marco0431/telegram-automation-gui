@@ -6,12 +6,15 @@ import threading
 import time
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkinter import font as tkfont
 
 from config import Config, LEGACY_AI_PROMPT, default_ai_prompt, default_chat_prompt
 from engine import BotEngine
 from engine_i18n import translate as engine_translate
 from ui_i18n import tr
 from validation import ValidationError, validate_settings
+from display import DisplayScale
+from dpi import work_area
 
 GROUP_KEYS = {"checkin": "checkin_groups", "chat": "chat_groups", "ai": "ai_reply_groups"}
 LANGUAGES = {"English": "en", "简体中文": "zh-CN"}
@@ -67,8 +70,12 @@ class App:
         self._batching_logs = False
         self._logs_dirty = False
         self._loading = True
-        root.geometry("1080x820")
-        root.minsize(900, 680)
+        self.display = DisplayScale(root)
+        self._dpi_after = None
+        self.fonts = {}
+        width, height = self.display.fit(1080, 820)
+        root.geometry(f"{width}x{height}")
+        root.minsize(*self.display.fit(900, 680))
         self._style()
         self._build_ui(self.cfg.snapshot())
         if self.cfg.load_error:
@@ -78,6 +85,7 @@ class App:
         self._poll_id = root.after(100, self._poll_events)
         root.protocol("WM_DELETE_WINDOW", self.on_close)
         root.bind("<Control-s>", lambda e: self.save_settings())
+        root.bind("<Configure>", self._schedule_dpi_check, add="+")
         if start_tray:
             self._start_tray()
 
@@ -89,19 +97,59 @@ class App:
         if "clam" in style.theme_names():
             style.theme_use("clam")
         self.root.configure(background="#f3f6fa")
-        style.configure(".", font=("Segoe UI", 10), background="#f3f6fa", foreground="#203044")
-        style.configure("TButton", padding=(12, 7))
+        for key, family, points, weight in (("body", "Segoe UI", 10, "normal"),
+                                            ("card", "Segoe UI", 11, "bold"),
+                                            ("title", "Segoe UI", 21, "bold"),
+                                            ("mono", "Consolas", 10, "normal")):
+            if key not in self.fonts:
+                self.fonts[key] = tkfont.Font(root=self.root)
+            self.fonts[key].configure(family=family, size=self.display.font_size(points), weight=weight)
+        self.root.option_add("*TCombobox*Listbox.font", self.fonts["body"])
+        px = self.display.px
+        style.configure(".", font=self.fonts["body"], background="#f3f6fa", foreground="#203044")
+        style.configure("TButton", padding=px((12, 7)))
         style.configure("TNotebook", borderwidth=0)
-        style.configure("TNotebook.Tab", padding=(18, 10))
+        style.configure("TNotebook.Tab", padding=px((18, 10)))
         style.configure("TLabelframe", background="white", bordercolor="#d8e1ec")
-        style.configure("TLabelframe.Label", background="white", font=("Segoe UI", 11, "bold"))
+        style.configure("TLabelframe.Label", background="white", font=self.fonts["card"])
         style.configure("Card.TFrame", background="white")
         style.configure("Card.TLabel", background="white")
         style.configure("Hint.TLabel", background="white", foreground="#617387")
-        style.configure("Title.TLabel", font=("Segoe UI", 21, "bold"), foreground="#163d66")
+        style.configure("Title.TLabel", font=self.fonts["title"], foreground="#163d66")
         style.configure("Accent.TButton", background="#1675bd", foreground="white")
         style.map("Accent.TButton", background=[("active", "#12649f"), ("disabled", "#bbc8d5")])
-        style.configure("Treeview", rowheight=30, background="white", fieldbackground="white")
+        style.configure("Treeview", rowheight=px(30), background="white", fieldbackground="white")
+        style.configure("Treeview.Heading", font=self.fonts["body"])
+        style.configure("TCheckbutton", indicatorsize=px(14), indicatormargin=px((1, 1, 4, 1)))
+        style.configure("TScrollbar", arrowsize=px(14))
+        style.configure("TCombobox", arrowsize=px(14), padding=px(2))
+
+    def _schedule_dpi_check(self, event):
+        if event.widget is not self.root or self.closing:
+            return
+        if self._dpi_after:
+            self.root.after_cancel(self._dpi_after)
+        self._dpi_after = self.root.after(100, self._refresh_dpi)
+
+    def _refresh_dpi(self):
+        self._dpi_after = None
+        previous = self.display.factor
+        if self.closing or not self.display.refresh():
+            return
+        self._style()
+        self.display.apply(self.root)
+        self.root.minsize(*self.display.fit(900, 680))
+        current_width, current_height = self.root.winfo_width(), self.root.winfo_height()
+        width, height = self.display.fit(current_width / self.display.factor,
+                                         current_height / self.display.factor)
+        if width < current_width or height < current_height:
+            # A window moved from a 4K screen must also fit a smaller monitor.
+            self.root.geometry(f"{width}x{height}")
+        dialog = self._group_dialog
+        if dialog and dialog.winfo_exists():
+            width, height = self.display.fit(dialog.winfo_width() / previous, dialog.winfo_height() / previous)
+            dialog.minsize(*self.display.fit(620, 420))
+            self._place_group_dialog(dialog, width, height)
 
     def _build_ui(self, data, active=0, task_active=0):
         self._loading = True
@@ -120,7 +168,8 @@ class App:
         language.pack(side="right")
         ttk.Label(language, text="Language / 语言").pack(anchor="w", pady=(0, 4))
         self.language_var = tk.StringVar(value="简体中文" if self.lang == "zh-CN" else "English")
-        box = ttk.Combobox(language, values=list(LANGUAGES), textvariable=self.language_var, state="readonly", width=15)
+        box = ttk.Combobox(language, values=list(LANGUAGES), textvariable=self.language_var,
+                           state="readonly", width=15, font=self.fonts["body"])
         box.pack()
         box.bind("<<ComboboxSelected>>", self._change_language)
         footer = ttk.Frame(self.root, padding=(18, 10))
@@ -164,6 +213,7 @@ class App:
         self._sync_controls()
         if self.dirty:
             self._notice(self.t("unsaved"))
+        self.display.apply(self.root)
 
     def _card(self, parent, title, row):
         frame = ttk.LabelFrame(parent, text=self.t(title), padding=16)
@@ -178,7 +228,8 @@ class App:
     def _entry(self, parent, data, key, row, *, secret=False, value=None):
         ttk.Label(parent, text=self.t(key), style="Card.TLabel").grid(row=row, column=0, sticky="w", padx=(0, 18), pady=7)
         self.vars[key] = tk.StringVar(value=str(data.get(key, "") if value is None else value))
-        entry = ttk.Entry(parent, textvariable=self.vars[key], width=32, show="•" if secret else "")
+        entry = ttk.Entry(parent, textvariable=self.vars[key], width=32,
+                          font=self.fonts["body"], show="•" if secret else "")
         entry.grid(row=row, column=1, sticky="ew", pady=7)
         self.field_widgets[key] = entry
         if secret:
@@ -190,7 +241,7 @@ class App:
     def _text(self, parent, data, key, row, *, lines=4, is_list=False):
         ttk.Label(parent, text=self.t(key), style="Card.TLabel").grid(row=row, column=0, columnspan=3, sticky="w", pady=(8, 5))
         box = tk.Text(parent, height=lines, width=45, wrap="word", relief="solid", borderwidth=1,
-                      font=("Segoe UI", 10), highlightthickness=1, highlightbackground="#d8e1ec")
+                      font=self.fonts["body"], highlightthickness=1, highlightbackground="#d8e1ec")
         box.grid(row=row + 1, column=0, columnspan=3, sticky="ew", pady=(0, 8))
         value = data.get(key, "")
         box.insert("1.0", "\n".join(value) if is_list and isinstance(value, list) else str(value or ""))
@@ -201,7 +252,8 @@ class App:
         self.vars[key] = tk.StringVar(value=data.get(key, choices[0][0]))
         labels = {value: self.t(label) for value, label in choices}
         shown = tk.StringVar(value=labels.get(self.vars[key].get(), labels[choices[0][0]]))
-        box = ttk.Combobox(parent, values=list(labels.values()), textvariable=shown, state="readonly", width=36)
+        box = ttk.Combobox(parent, values=list(labels.values()), textvariable=shown,
+                           state="readonly", width=36, font=self.fonts["body"])
         box.grid(row=row, column=1, columnspan=2, sticky="ew", pady=7)
         def changed(event):
             self.vars[key].set(next(value for value, label in labels.items() if label == shown.get()))
@@ -331,7 +383,7 @@ class App:
         area = ttk.Frame(self.pages["activity"], padding=(14, 0, 14, 14))
         area.pack(fill="both", expand=True)
         self.txt_log = tk.Text(area, state="disabled", wrap="word", background="#182738", foreground="#e4edf7",
-                               font=("Consolas", 10), relief="flat", padx=12, pady=12)
+                               font=self.fonts["mono"], relief="flat", padx=12, pady=12)
         bar = ttk.Scrollbar(area, command=self.txt_log.yview)
         self.txt_log.configure(yscrollcommand=bar.set)
         bar.pack(side="right", fill="y")
@@ -505,10 +557,9 @@ class App:
         self.root.update_idletasks()
         dialog = self._group_dialog = tk.Toplevel(self.root)
         dialog.title(self.t("choose_groups"))
-        x = max(0, self.root.winfo_x() + (self.root.winfo_width() - 760) // 2)
-        y = max(0, self.root.winfo_y() + (self.root.winfo_height() - 540) // 2)
-        dialog.geometry(f"760x540+{x}+{y}")
-        dialog.minsize(620, 420)
+        width, height = self.display.fit(760, 540)
+        self._place_group_dialog(dialog, width, height)
+        dialog.minsize(*self.display.fit(620, 420))
         dialog.transient(self.root)
         dialog.grab_set()
         area = ttk.Frame(dialog, padding=16)
@@ -518,7 +569,7 @@ class App:
         bar.pack(fill="x", pady=(0, 10))
         ttk.Label(bar, text=self.t("search")).pack(side="left")
         search = tk.StringVar()
-        ttk.Entry(bar, textvariable=search).pack(side="left", fill="x", expand=True, padx=10)
+        ttk.Entry(bar, textvariable=search, font=self.fonts["body"]).pack(side="left", fill="x", expand=True, padx=10)
         ttk.Button(bar, text=self.t("refresh"), command=self.on_refresh).pack(side="right")
         tree_frame = ttk.Frame(area)
         tree_frame.pack(fill="both", expand=True)
@@ -578,6 +629,13 @@ class App:
         dialog.protocol("WM_DELETE_WINDOW", close)
         self._group_render = render
         render()
+        self.display.apply(dialog)
+
+    def _place_group_dialog(self, dialog, width, height):
+        left, top, right, bottom = work_area(self.root)
+        x = max(left, min(right - width, self.root.winfo_x() + (self.root.winfo_width() - width) // 2))
+        y = max(top, min(bottom - height - self.display.px(40), self.root.winfo_y() + (self.root.winfo_height() - height) // 2))
+        dialog.geometry(f"{width}x{height}+{x}+{y}")
 
     def on_refresh(self):
         if self.connection_state in ("ready", "running"):
@@ -681,7 +739,8 @@ class App:
         ttk.Label(self.auth_frame, text=self.t(label), style="Card.TLabel").pack(anchor="w", pady=(0, 6))
         var = tk.StringVar(value=self._auth_values.get(field, ""))
         var.trace_add("write", lambda *args: self._auth_values.update({field: var.get()}))
-        entry = ttk.Entry(self.auth_frame, textvariable=var, width=36, show="•" if field == "password" else "")
+        entry = ttk.Entry(self.auth_frame, textvariable=var, width=36,
+                          font=self.fonts["body"], show="•" if field == "password" else "")
         entry.pack(side="left", fill="x", expand=True)
         def submit():
             if self.auth_pending:
@@ -693,6 +752,7 @@ class App:
                                       state="disabled" if self.auth_pending else "normal")
         self.auth_submit.pack(side="left", padx=8)
         entry.bind("<Return>", lambda e: submit())
+        self.display.apply(self.auth_frame)
 
     def _start_tray(self):
         try:
@@ -728,6 +788,9 @@ class App:
         self.closing = True
         if self._poll_id:
             self.root.after_cancel(self._poll_id)
+        if self._dpi_after:
+            self.root.after_cancel(self._dpi_after)
+            self._dpi_after = None
         self._notice(self.t("closing"))
         self.engine.send({"type": "shutdown"})
         self._close_deadline = time.monotonic() + 6
