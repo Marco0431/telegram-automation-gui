@@ -74,6 +74,10 @@ Each task has its own enable switch and group selector. Configure only the tasks
 - **Background operation:** this preference is saved with the configuration. When enabled, closing the window does not stop tasks; use Stop or quit from the tray.
 - **Activity:** contains connection, task, and AI-test messages. The interface bounds the retained log history to avoid accumulating it indefinitely.
 
+## 4K and high DPI displays
+
+On Windows, the app supports high DPI displays and adjusts fonts, spacing, list row heights, and window size to the system's display scaling. After updating, **fully quit and reopen the app**; if it is running in the tray, choose Quit there. No manual configuration changes or changes to Windows display scaling are needed.
+
 ## AI connection
 
 The **AI connection** page contains provider settings shared by scheduled AI messages and AI replies. Requests use the OpenAI Python SDK's Chat Completions interface.
@@ -119,6 +123,7 @@ The built-in prompts request concise, natural English for the English interface 
 | --- | --- |
 | [main.py](main.py) | Application entry point, logging setup, and startup error handling |
 | [ui.py](ui.py) | Tkinter UI, connection and task settings, language switching, activity, and tray integration |
+| [dpi.py](dpi.py) / [display.py](display.py) | Windows DPI awareness, monitor dimensions, and interface scaling |
 | [engine.py](engine.py) | Telethon authentication, scheduling, group messages, and AI requests |
 | [config.py](config.py) | Defaults, English/Chinese default prompts, legacy migration, and local persistence |
 | [validation.py](validation.py) | Connection and enabled-task settings validation |

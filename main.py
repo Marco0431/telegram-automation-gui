@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from config import _base_dir, system_language
+from dpi import enable_high_dpi
 from ui import App
 from ui_i18n import tr
 
@@ -13,6 +14,8 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s",
                         handlers=[logging.FileHandler(os.path.join(_base_dir(), "app.log"), encoding="utf-8")])
     try:
+        # This must run before Tk creates any native window.
+        enable_high_dpi()
         root = tk.Tk()
         App(root)
         root.mainloop()

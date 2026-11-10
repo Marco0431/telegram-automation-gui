@@ -74,6 +74,10 @@ python main.py
 - **后台运行：**该选项随配置保存。启用后，关闭窗口不等于停止任务；请用停止按钮或托盘退出操作结束运行。
 - **运行日志：**集中查看连接、任务和 AI 测试结果；界面限制保留的日志量，避免长时间运行时无限累积。
 
+## 4K 与高 DPI 显示
+
+Windows 版支持高 DPI 显示，字体、间距、列表行高和窗口大小跟随系统缩放调整。更新后请**完整退出程序并重新打开**；若程序在托盘运行，请从托盘选择退出。无需手动修改配置，也不需要更改 Windows 的显示缩放设置。
+
 ## AI 接口
 
 **AI 接口** 页面提供定时 AI 消息和 AI 回复共用的连接参数。它们通过 OpenAI Python SDK 的 Chat Completions 接口发出请求。
@@ -119,6 +123,7 @@ python main.py
 | --- | --- |
 | [main.py](main.py) | 启动入口、日志初始化与启动错误提示 |
 | [ui.py](ui.py) | Tkinter 界面、连接与任务设置、语言切换、运行日志和托盘 |
+| [dpi.py](dpi.py) / [display.py](display.py) | Windows DPI 感知、显示器尺寸与界面缩放 |
 | [engine.py](engine.py) | Telethon 登录、调度、群消息与 AI 请求 |
 | [config.py](config.py) | 默认值、中英文默认提示词、旧配置迁移与本地配置读写 |
 | [validation.py](validation.py) | 连接信息与已启用任务的设置校验 |

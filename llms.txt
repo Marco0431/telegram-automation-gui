@@ -8,6 +8,8 @@ Start from source with `python -m pip install -r requirements.txt`, then `python
 
 The language selector saves its choice and preserves custom text and pending edits. Built-in AI prompts request English for the English interface and Chinese for the Chinese interface; empty prompts use the selected language's default, while custom prompts remain unchanged. New configurations follow the system language; existing configurations without a language field retain Chinese. The background-operation preference is saved, and the Activity view bounds retained log history.
 
+On Windows, fonts and layout follow the system's display scaling for high DPI/4K displays. Fully quit and reopen the app after updating; no manual configuration or Windows display-scaling changes are needed.
+
 AI tasks share an OpenAI-compatible Chat Completions endpoint and require a provider key. AI replies send up to 10 recent messages; scheduled AI messages use up to 12, including sender names. Test current connection uses the current AI fields without saving them, includes no group history, and does not change Telegram login state. Test requests may incur provider charges. Local config/session files contain sensitive credentials without application-level encryption. Use only where group rules permit automation. No LICENSE file is currently provided; reuse permission should be confirmed with the maintainer.
 
 ## Documentation
@@ -24,6 +26,8 @@ AI tasks share an OpenAI-compatible Chat Completions endpoint and require a prov
 
 - [Application entry point](https://github.com/Marco0431/telegram-automation-gui/blob/main/main.py): Starts the UI, configures logging, and handles startup errors.
 - [Desktop interface](https://github.com/Marco0431/telegram-automation-gui/blob/main/ui.py): Tkinter pages, language switching, login, task configuration, activity, and tray integration.
+- [DPI support](https://github.com/Marco0431/telegram-automation-gui/blob/main/dpi.py): Windows DPI awareness and monitor metrics.
+- [Display scaling](https://github.com/Marco0431/telegram-automation-gui/blob/main/display.py): Scales fonts and layout dimensions with the display DPI.
 - [Automation engine](https://github.com/Marco0431/telegram-automation-gui/blob/main/engine.py): Telethon authentication, scheduling, group messages, and AI requests.
 - [Configuration defaults](https://github.com/Marco0431/telegram-automation-gui/blob/main/config.py): Runtime defaults, bilingual prompts, legacy migration, and local configuration persistence.
 - [Settings validation](https://github.com/Marco0431/telegram-automation-gui/blob/main/validation.py): Checks connection settings and enabled workflows.
