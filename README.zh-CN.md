@@ -1,0 +1,147 @@
+# Telegram Automation GUI
+
+**简体中文** · [English](README.md)
+
+在一个桌面窗口里连接 Telegram、选择目标群、设置定时签到并查看运行日志；需要时再启用定时消息或 AI 回复。支持**中文与英文界面**和 **4K 高 DPI 显示**，使用手机号登录个人账号（Userbot）。
+
+**[下载 Windows 版 EXE](https://github.com/Marco0431/telegram-automation-gui/releases/latest/download/TelegramAutomation-Windows-x64.exe)** · [发布说明](https://github.com/Marco0431/telegram-automation-gui/releases) · [快速开始](#快速开始) · [源码运行](#源码运行可选) · [反馈问题](https://github.com/Marco0431/telegram-automation-gui/issues/new/choose)
+
+**Windows 64 位：下载后双击打开，无需安装 Python 或 Git。** EXE 放在 Releases，项目源码保留在本仓库。
+
+## 界面预览
+
+<a href="docs/media/telegram-tour.gif"><img src="docs/media/telegram-tour.gif" width="960" alt="Telegram Automation 操作导览：连接、任务设置、中文界面与 AI 配置"></a>
+
+<table>
+  <tr>
+    <td width="50%"><strong>连接账号</strong><br>集中填写 Telegram 凭据，需要时再开启代理。<br><a href="docs/media/telegram-english.png"><img src="docs/media/telegram-english.png" width="460" alt="英文连接页：Telegram API ID、API hash 与可选代理设置"></a></td>
+    <td width="50%"><strong>按任务配置</strong><br>目标群、时间和指令放在同一页。<br><a href="docs/media/telegram-tasks.png"><img src="docs/media/telegram-tasks.png" width="460" alt="英文每日签到任务页，已选择示例群，显示时间与签到指令"></a></td>
+  </tr>
+  <tr>
+    <td><strong>中英即时切换</strong><br>切换语言，保留正在编辑的任务内容。<br><a href="docs/media/telegram-chinese.png"><img src="docs/media/telegram-chinese.png" width="460" alt="中文每日签到任务页，保留所选示例群与签到指令"></a></td>
+    <td><strong>共用 AI 接口</strong><br>接口、密钥、模型和测试按钮集中设置。<br><a href="docs/media/telegram-ai.png"><img src="docs/media/telegram-ai.png" width="460" alt="中文 AI 接口页，包含接口地址、模型 ID 和测试当前连接按钮"></a></td>
+  </tr>
+</table>
+
+点击图片可查看原图。以上为真实界面的离线演示，使用示例群组，未连接 Telegram、未发送消息或调用 AI。
+
+## 快速开始
+
+1. **[下载 TelegramAutomation-Windows-x64.exe](https://github.com/Marco0431/telegram-automation-gui/releases/latest/download/TelegramAutomation-Windows-x64.exe)**，双击打开。
+2. 准备自己的 Telegram 账号，并在官方 [my.telegram.org](https://my.telegram.org) 的 **API development tools** 中取得 `api_id` / `api_hash`，按下面的“第一次运行”连接账号。
+
+配置与登录会话会自动保存在 EXE 所在文件夹，无需手动创建配置文件。更新时先完整退出程序，再替换 EXE，并保留同一文件夹中的 `config.json` 和 `userbot.session`。
+
+普通签到和预设消息不需要 AI 服务；想使用 AI 回复时再填写服务商接口和密钥。登录使用个人账号的手机号和验证码（如有二步验证，还需密码），不是 BotFather 的 bot token。
+
+全新配置默认关闭所有任务和代理，消息池为空；先填写自己的指令或消息，再启用需要的任务。升级会保留旧配置中的任务选择与文本。
+
+## 第一次运行
+
+以“只开启一个群的每日签到”为例：
+
+1. 在顶部选择 **中文** 或 **English**。
+2. 打开 **连接**，填写 `api_id` / `api_hash`。只有需要代理时才展开代理设置并启用，随后点 **保存连接信息并连接**。按提示输入带国家区号的手机号、验证码；启用了二步验证的账号还需输入密码。连接操作会保存连接设置，登录成功后自动读取群列表。
+3. 打开 **任务 → 每日签到**，启用任务，点 **选择群组**，搜索并选择一个允许签到的群；确认选择后填写签到指令和 `HH:MM` 时间。选群入口就在每项任务里，无需切到单独的群组页面。
+4. 保持 **定时消息** 和 **AI 回复** 关闭，点底部 **保存并运行**。程序先检查并保存设置，再运行已启用的任务；在 **运行日志** 查看状态与下次签到时间。只想保存、不运行时，点 **保存设置**。
+5. 需要结束任务时点 **停止**。如启用了后台运行，关闭窗口会继续运行；可从系统托盘恢复窗口再停止。
+
+签到使用运行电脑的本地时间，并额外加入 0–5 分钟延迟；当天设定时间已过时会安排到次日。不会因为刚点击开始就立刻签到。
+
+## 选择一个任务
+
+| 目标 | 设置位置 | 是否需要 AI |
+| --- | --- | --- |
+| 在指定群里每天发送签到指令 | 任务 → 每日签到：选择群组、指令与时间 | 否 |
+| 按间隔发送自己准备的消息 | 任务 → 定时消息：选择群组、固定消息池、间隔与活跃时段 | 否 |
+| 按间隔生成群聊消息 | 任务 → 定时消息：选择 AI 模式；在 AI 接口配置服务商 | 是 |
+| 回复选定群中的消息 | 任务 → AI 回复：选择群组、触发方式与回复间隔；在 AI 接口配置服务商 | 是 |
+
+每项任务各有启用开关和群组选择器，可以只配置需要的那一项。关闭的任务不要求补齐其高级设置。定时消息的活跃时段支持跨午夜，例如 22 点至次日 6 点。
+
+## 语言与保存
+
+- **顶部语言选择器：**即时切换中文与英文并记住选择。全新配置按系统语言选择界面；旧配置没有语言字段时保留中文。
+- **已有内容：**切换语言保留正在编辑的字段和自定义文本。内置 AI 提示词按界面语言提供；自定义提示词、签到指令和消息池不会被自动翻译或覆盖。
+- **保存设置：**一次保存所有页面的设置，并在界面给出结果，不逐页弹出成功窗口。
+- **保存并运行：**先校验并保存，再开始启用的任务；缺少必要信息时显示具体问题。保存本身不会发送群消息。
+- **运行中修改：**先停止任务再保存新的任务设置；正在编辑的内容会留在窗口中。
+- **后台运行：**该选项随配置保存。启用后，关闭窗口不等于停止任务；请用停止按钮或托盘退出操作结束运行。
+- **运行日志：**集中查看连接、任务和 AI 测试结果；界面限制保留的日志量，避免长时间运行时无限累积。
+
+## 4K 与高 DPI 显示
+
+Windows 版支持高 DPI 显示，字体、间距、列表行高和窗口大小跟随系统缩放调整。更新后请**完整退出程序并重新打开**；若程序在托盘运行，请从托盘选择退出。无需手动修改配置，也不需要更改 Windows 的显示缩放设置。
+
+## AI 接口
+
+**AI 接口** 页面提供定时 AI 消息和 AI 回复共用的连接参数。它们通过 OpenAI Python SDK 的 Chat Completions 接口发出请求。
+
+| 字段 | 填写内容 |
+| --- | --- |
+| Base URL | 服务商提供的 OpenAI 兼容接口地址，例如 `https://api.deepseek.com/v1` |
+| API Key | 对应服务商的密钥 |
+| 模型 | 该服务商支持的模型 ID |
+
+**测试当前连接** 使用当前填写、尚未保存的 AI 参数发送一条简短测试请求，不带群聊历史，不保存配置，也不改变 Telegram 登录状态。测试结果出现在状态提示和运行日志中。测试及后续生成可能产生服务商费用；成功只表示当前文本请求可用。确认配置后，点 **保存设置**，或在准备运行时点 **保存并运行**。
+
+中文界面的内置提示词要求简短、自然的中文回复；英文界面对应英文提示词。两者都要求结合上下文，不编造事实或个人经历，也不假装真人。各任务的提示词留空时使用所选语言的默认值；自行填写的提示词会保留，不随语言切换改写。
+
+## 常见问题
+
+| 现象 | 先检查 |
+| --- | --- |
+| 源码运行提示 `No module named tkinter` | 运行 `python -m tkinter`；为当前 Python 环境安装 Tkinter。Windows EXE 版不需要另装 Python。 |
+| 连接失败 | 在连接页检查代理类型、地址和端口；不需要代理时关闭代理开关。 |
+| 选群列表为空 | 先连接并完成 Telegram 登录，再打开该任务的群组选择器；必要时刷新列表。 |
+| 已登录但没有任务执行 | 检查任务是否启用、是否选择目标群，并确认已点击保存并运行；查看运行日志。 |
+| 签到没有立刻发送 | 使用电脑本地时间；已过的时刻安排到次日，另有 0–5 分钟延迟。 |
+| 切换英文后群里仍发送中文 | 界面语言不会改写自定义提示词、签到指令或消息池，请按群的需要自行调整。 |
+| AI 测试失败 | 核对 Base URL、密钥和模型 ID，查看状态与运行日志中的错误。 |
+| 配置无法读取，不能保存 | 先备份 `config.json`，修复 JSON 格式后重启；若要重建配置，先将备份移到安全位置，再移走原文件并重启。不要公开上传含密钥的配置。 |
+| 关闭窗口后任务还在运行 | 启用了后台运行。通过托盘恢复窗口并停止任务，或退出程序。 |
+
+## 隐私与使用范围
+
+- `api_id` / `api_hash` / AI API Key / 群信息保存在本地 `config.json`，登录凭证保存在 `userbot.session`，没有应用层加密。这些文件已被 `.gitignore` 忽略，但仍应避免手动分享或强制提交。
+- AI 自动回复读取最多 10 条近期消息，定时 AI 消息读取最多 12 条，并将消息文本及发送者名称发送给你配置的 AI 服务商。关闭对应任务后不会触发其自动请求；手动测试仍会发送测试请求，但不带群聊历史。
+- 日志可能包含手机号、账号标识、群名、消息内容或接口错误。反馈时只摘取相关错误并隐藏私人信息；不要上传 `config.json`、`*.session` 或完整日志。
+- 仅在允许自动化的群中使用，并遵守 Telegram 条款与群规则。频繁自动发言可能触发限流、账号限制或管理员处置；间隔设置不保证避免这些问题。
+
+## 源码运行（可选）
+
+<details>
+<summary>面向开发者，或需要从 Python 运行的用户</summary>
+
+需要 Python 3 和 Tkinter。在本仓库下载源码 ZIP，或使用 Git：
+
+```bash
+git clone https://github.com/Marco0431/telegram-automation-gui.git
+cd telegram-automation-gui
+python -m pip install -r requirements.txt
+python main.py
+```
+
+使用 ZIP 时，解压后在源码目录执行最后两条命令。可用 `python -m tkinter` 检查 Tkinter；缺失时通过 Python 发行版或系统包管理器安装。
+
+不必复制配置模板即可启动。[config.py](config.py) 提供运行时默认值，[config.example.json](config.example.json) 仅供参考。源码运行的配置与会话保存在项目目录；请勿将它们提交到 Git。
+
+</details>
+
+## 文件与反馈
+
+| 文件 | 内容 |
+| --- | --- |
+| [main.py](main.py) | 启动入口、日志初始化与启动错误提示 |
+| [ui.py](ui.py) | Tkinter 界面、连接与任务设置、语言切换、运行日志和托盘 |
+| [dpi.py](dpi.py) / [display.py](display.py) | Windows DPI 感知、显示器尺寸与界面缩放 |
+| [engine.py](engine.py) | Telethon 登录、调度、群消息与 AI 请求 |
+| [config.py](config.py) | 默认值、中英文默认提示词、旧配置迁移与本地配置读写 |
+| [validation.py](validation.py) | 连接信息与已启用任务的设置校验 |
+| [ui_i18n.py](ui_i18n.py) / [engine_i18n.py](engine_i18n.py) | 界面与运行消息的中英文文本 |
+| [config.example.json](config.example.json) | 不含个人密钥的配置示例 |
+| [llms.txt](llms.txt) | 公开的英文项目摘要与文档、源码索引 |
+
+[报告问题](https://github.com/Marco0431/telegram-automation-gui/issues/new?template=bug_report.md) 时，请写明系统、软件版本、界面语言、使用的功能页、复现步骤与脱敏后的错误；源码运行时再附上 Python 版本。翻译不清楚、设置步骤难找或按钮含义不明确，都欢迎反馈；也欢迎文档修正 PR。
+
+当前仓库没有提供 `LICENSE` 文件；公开源码不代表已明确授予开放源码许可。需要复制、分发或商用时，请先向维护者确认许可。

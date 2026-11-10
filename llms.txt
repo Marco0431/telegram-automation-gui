@@ -16,10 +16,10 @@ AI tasks share an OpenAI-compatible Chat Completions endpoint and require a prov
 
 - [Windows EXE download](https://github.com/Marco0431/telegram-automation-gui/releases/latest/download/TelegramAutomation-Windows-x64.exe): Standalone 64-bit Windows application; no separate Python or Git installation.
 - [Releases](https://github.com/Marco0431/telegram-automation-gui/releases): Executable downloads and release notes.
-- [English guide](https://github.com/Marco0431/telegram-automation-gui/blob/main/README.en.md): Setup, tasks, language selection, saving, troubleshooting, and data handling.
-- [中文说明](https://github.com/Marco0431/telegram-automation-gui): Chinese guide to the same workflows.
-- [First-run walkthrough](https://github.com/Marco0431/telegram-automation-gui/blob/main/README.en.md#first-run): Connect a personal account and configure one daily check-in task.
-- [Troubleshooting](https://github.com/Marco0431/telegram-automation-gui/blob/main/README.en.md#troubleshooting): Tkinter, proxy, task, language, schedule, and AI connection checks.
+- [English guide](https://github.com/Marco0431/telegram-automation-gui/blob/main/README.md): Setup, tasks, language selection, saving, troubleshooting, and data handling.
+- [中文说明](https://github.com/Marco0431/telegram-automation-gui/blob/main/README.zh-CN.md): Chinese guide to the same workflows.
+- [First-run walkthrough](https://github.com/Marco0431/telegram-automation-gui/blob/main/README.md#first-run): Connect a personal account and configure one daily check-in task.
+- [Troubleshooting](https://github.com/Marco0431/telegram-automation-gui/blob/main/README.md#troubleshooting): Tkinter, proxy, task, language, schedule, and AI connection checks.
 - [Report a problem](https://github.com/Marco0431/telegram-automation-gui/issues/new?template=bug_report.md): Include app version, environment, and interface-language details with a redacted error excerpt.
 - [Configuration example](https://github.com/Marco0431/telegram-automation-gui/blob/main/config.example.json): Review proxy, task, and provider settings before using the example.
 - [Dependencies](https://github.com/Marco0431/telegram-automation-gui/blob/main/requirements.txt): Python packages required to run the application.
