@@ -13,6 +13,7 @@ import unittest
 from unittest.mock import patch
 
 from config import Config, LEGACY_AI_PROMPT, default_ai_prompt, default_chat_prompt, make_defaults
+from dpi import work_area
 from ui import App
 
 
@@ -53,8 +54,11 @@ class UITests(unittest.TestCase):
         if self.root.winfo_exists():
             if getattr(self, "app", None) is not None:
                 self.app.closing = True
-                if self.app._poll_id:
-                    self.root.after_cancel(self.app._poll_id)
+                for name in ("_poll_id", "_dpi_after"):
+                    callback = getattr(self.app, name, None)
+                    if callback:
+                        self.root.after_cancel(callback)
+                        setattr(self.app, name, None)
             self.root.destroy()
 
     def text(self, key, value):
@@ -111,20 +115,35 @@ class UITests(unittest.TestCase):
                         self.assertLessEqual(top + widget.winfo_height(), self.root.winfo_height())
         self.assertEqual(self.callback_errors, [])
 
-    def test_group_picker_opens_centered_over_parent(self):
+    def test_group_picker_opens_centered_over_parent_within_work_area(self):
         self.root.attributes("-alpha", 0)
         self.root.geometry("1080x820+100+80")
         self.root.deiconify()
         self.root.update()
         self.app.choose_groups("checkin")
-        self.root.update()
         dialog = self.app._group_dialog
-        for position, size in (("winfo_rootx", "winfo_width"), ("winfo_rooty", "winfo_height")):
-            parent_center = getattr(self.root, position)() + getattr(self.root, size)() / 2
-            dialog_center = getattr(dialog, position)() + getattr(dialog, size)() / 2
-            # Window-manager borders differ between Windows and Linux/Xvfb.
-            self.assertLessEqual(abs(parent_center - dialog_center), 30)
-        self.assertEqual(self.engine.commands, [])
+        try:
+            self.root.update()
+            left, top, right, bottom = work_area(self.root)
+            # The fixed parent can extend beyond a small runner desktop. The
+            # picker should use the closest allowed position to its center,
+            # leaving the application's clearance for the window frame.
+            bottom -= self.app.display.px(40)
+            for position, size, lower, upper in (
+                ("winfo_x", "winfo_width", left, right),
+                ("winfo_y", "winfo_height", top, bottom),
+            ):
+                length = getattr(dialog, size)()
+                centered = getattr(self.root, position)() + (getattr(self.root, size)() - length) / 2
+                expected = max(lower, min(upper - length, centered))
+                # Window-manager borders differ between Windows and Linux/Xvfb.
+                self.assertLessEqual(abs(getattr(dialog, position)() - expected), 30)
+            self.assertEqual(self.engine.commands, [])
+        finally:
+            if dialog.winfo_exists():
+                dialog.grab_release()
+                dialog.destroy()
+            self.app._group_dialog = self.app._group_render = None
 
     def test_language_switch_keeps_drafts_and_only_persists_language_defaults(self):
         before = self.cfg.snapshot()
