@@ -18,6 +18,7 @@ def main():
         enable_high_dpi()
         root = tk.Tk()
         App(root)
+        root.after_idle(lambda: logging.getLogger("tgbot").info("Application ready"))
         root.mainloop()
     except Exception as exc:
         logging.getLogger(__name__).exception("Application failed")
