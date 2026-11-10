@@ -2,44 +2,39 @@
 
 **简体中文** · [English](README.en.md)
 
-在一个桌面窗口里连接 Telegram、选择目标群、设置定时签到并查看运行日志；需要时再启用定时消息或 AI 回复。基于 **Python、Telethon 和 Tkinter**，支持**中文与英文界面**，使用手机号登录个人账号（Userbot）。
+在一个桌面窗口里连接 Telegram、选择目标群、设置定时签到并查看运行日志；需要时再启用定时消息或 AI 回复。支持**中文与英文界面**和 **4K 高 DPI 显示**，使用手机号登录个人账号（Userbot）。
 
-[快速开始](#快速开始) · [第一次运行](#第一次运行) · [语言与保存](#语言与保存) · [常见问题](#常见问题) · [反馈问题](https://github.com/Marco0431/telegram-automation-gui/issues/new/choose)
+**[下载 Windows 版 EXE](https://github.com/Marco0431/telegram-automation-gui/releases/latest/download/TelegramAutomation-Windows-x64.exe)** · [发布说明](https://github.com/Marco0431/telegram-automation-gui/releases) · [快速开始](#快速开始) · [源码运行](#源码运行可选) · [反馈问题](https://github.com/Marco0431/telegram-automation-gui/issues/new/choose)
 
-适合愿意从 Python 源码运行、且所在群允许自动化的个人账号用户。登录使用 Telegram 应用的 `api_id` / `api_hash`，不是 BotFather 的 bot token。
+**Windows 64 位：下载后双击打开，无需安装 Python 或 Git。** EXE 放在 Releases，项目源码保留在本仓库。
 
 ## 界面预览
 
+<a href="docs/media/telegram-tour.gif"><img src="docs/media/telegram-tour.gif" width="960" alt="Telegram Automation 操作导览：连接、任务设置、中文界面与 AI 配置"></a>
+
 <table>
-  <tr><th>英文连接页</th><th>切换中文后的任务页</th></tr>
   <tr>
-    <td><a href="docs/media/telegram-english.png"><img src="docs/media/telegram-english.png" width="440" alt="英文连接页，API ID 和 API hash 均为空，代理关闭"></a></td>
-    <td><a href="docs/media/telegram-chinese.png"><img src="docs/media/telegram-chinese.png" width="440" alt="简体中文每日签到页，切换语言后保留示例群和签到指令"></a></td>
+    <td width="50%"><strong>连接账号</strong><br>集中填写 Telegram 凭据，需要时再开启代理。<br><a href="docs/media/telegram-english.png"><img src="docs/media/telegram-english.png" width="460" alt="英文连接页：Telegram API ID、API hash 与可选代理设置"></a></td>
+    <td width="50%"><strong>按任务配置</strong><br>目标群、时间和指令放在同一页。<br><a href="docs/media/telegram-tasks.png"><img src="docs/media/telegram-tasks.png" width="460" alt="英文每日签到任务页，已选择示例群，显示时间与签到指令"></a></td>
+  </tr>
+  <tr>
+    <td><strong>中英即时切换</strong><br>切换语言，保留正在编辑的任务内容。<br><a href="docs/media/telegram-chinese.png"><img src="docs/media/telegram-chinese.png" width="460" alt="中文每日签到任务页，保留所选示例群与签到指令"></a></td>
+    <td><strong>共用 AI 接口</strong><br>接口、密钥、模型和测试按钮集中设置。<br><a href="docs/media/telegram-ai.png"><img src="docs/media/telegram-ai.png" width="460" alt="中文 AI 接口页，包含接口地址、模型 ID 和测试当前连接按钮"></a></td>
   </tr>
 </table>
 
-点击截图可查看原尺寸。[英文任务页](docs/media/telegram-tasks.png)展示同一组设置；切换语言后，群组选择和自定义指令仍然保留。
-
-![依次查看英文连接、英文每日签到与中文每日签到页面](docs/media/telegram-tour.gif)
-
-以上为真实原生界面的**离线预览**：群名中的 `example` 表示演示数据，`/checkin` 仅为示例指令。未登录 Telegram、未发送群消息或调用 AI；所有任务均关闭。
+点击图片可查看原图。以上为真实界面的离线演示，使用示例群组，未连接 Telegram、未发送消息或调用 AI。
 
 ## 快速开始
 
-需要 Python 3、Tkinter 和 Telegram 账号。先在官方 [my.telegram.org](https://my.telegram.org) 登录，进入 **API development tools** 创建应用，取得自己的 `api_id` 和 `api_hash`。普通签到和固定消息池不需要 AI 服务。
+1. **[下载 TelegramAutomation-Windows-x64.exe](https://github.com/Marco0431/telegram-automation-gui/releases/latest/download/TelegramAutomation-Windows-x64.exe)**，双击打开。
+2. 准备自己的 Telegram 账号，并在官方 [my.telegram.org](https://my.telegram.org) 的 **API development tools** 中取得 `api_id` / `api_hash`，按下面的“第一次运行”连接账号。
 
-```bash
-git clone https://github.com/Marco0431/telegram-automation-gui.git
-cd telegram-automation-gui
-python -m pip install -r requirements.txt
-python main.py
-```
+配置与登录会话会自动保存在 EXE 所在文件夹，无需手动创建配置文件。更新时先完整退出程序，再替换 EXE，并保留同一文件夹中的 `config.json` 和 `userbot.session`。
 
-没有 Git 时，可使用仓库的 **Code → Download ZIP**，解压后在该目录执行最后两条命令。启动前可运行 `python -m tkinter` 检查 Tkinter 是否可用；缺失时需通过所用 Python 发行版或系统包管理器安装。只打开界面不需要登录 Telegram 或填写 AI 密钥。
+普通签到和预设消息不需要 AI 服务；想使用 AI 回复时再填写服务商接口和密钥。登录使用个人账号的手机号和验证码（如有二步验证，还需密码），不是 BotFather 的 bot token。
 
-不必复制配置模板即可启动。[config.py](config.py) 提供实际默认值，[config.example.json](config.example.json) 仅供参考；使用示例前请检查代理、任务开关和接口字段。
-
-全新配置默认关闭所有任务和代理，消息池为空；先填写自己的指令或消息，再启用需要的任务。升级时会保留旧配置中的任务选择与文本。
+全新配置默认关闭所有任务和代理，消息池为空；先填写自己的指令或消息，再启用需要的任务。升级会保留旧配置中的任务选择与文本。
 
 ## 第一次运行
 
@@ -82,10 +77,6 @@ Windows 版支持高 DPI 显示，字体、间距、列表行高和窗口大小�
 
 **AI 接口** 页面提供定时 AI 消息和 AI 回复共用的连接参数。它们通过 OpenAI Python SDK 的 Chat Completions 接口发出请求。
 
-<a href="docs/media/telegram-ai.png"><img src="docs/media/telegram-ai.png" width="720" alt="中文版 AI 接口页面，显示接口地址、模型 ID 和测试当前连接按钮，API 密钥为空"></a>
-
-离线配置预览，未填写密钥或发送测试请求；点击可查看原图。
-
 | 字段 | 填写内容 |
 | --- | --- |
 | Base URL | 服务商提供的 OpenAI 兼容接口地址，例如 `https://api.deepseek.com/v1` |
@@ -100,7 +91,7 @@ Windows 版支持高 DPI 显示，字体、间距、列表行高和窗口大小�
 
 | 现象 | 先检查 |
 | --- | --- |
-| `No module named tkinter` | 运行 `python -m tkinter`；为当前 Python 环境安装 Tkinter。 |
+| 源码运行提示 `No module named tkinter` | 运行 `python -m tkinter`；为当前 Python 环境安装 Tkinter。Windows EXE 版不需要另装 Python。 |
 | 连接失败 | 在连接页检查代理类型、地址和端口；不需要代理时关闭代理开关。 |
 | 选群列表为空 | 先连接并完成 Telegram 登录，再打开该任务的群组选择器；必要时刷新列表。 |
 | 已登录但没有任务执行 | 检查任务是否启用、是否选择目标群，并确认已点击保存并运行；查看运行日志。 |
@@ -117,6 +108,26 @@ Windows 版支持高 DPI 显示，字体、间距、列表行高和窗口大小�
 - 日志可能包含手机号、账号标识、群名、消息内容或接口错误。反馈时只摘取相关错误并隐藏私人信息；不要上传 `config.json`、`*.session` 或完整日志。
 - 仅在允许自动化的群中使用，并遵守 Telegram 条款与群规则。频繁自动发言可能触发限流、账号限制或管理员处置；间隔设置不保证避免这些问题。
 
+## 源码运行（可选）
+
+<details>
+<summary>面向开发者，或需要从 Python 运行的用户</summary>
+
+需要 Python 3 和 Tkinter。在本仓库下载源码 ZIP，或使用 Git：
+
+```bash
+git clone https://github.com/Marco0431/telegram-automation-gui.git
+cd telegram-automation-gui
+python -m pip install -r requirements.txt
+python main.py
+```
+
+使用 ZIP 时，解压后在源码目录执行最后两条命令。可用 `python -m tkinter` 检查 Tkinter；缺失时通过 Python 发行版或系统包管理器安装。
+
+不必复制配置模板即可启动。[config.py](config.py) 提供运行时默认值，[config.example.json](config.example.json) 仅供参考。源码运行的配置与会话保存在项目目录；请勿将它们提交到 Git。
+
+</details>
+
 ## 文件与反馈
 
 | 文件 | 内容 |
@@ -131,6 +142,6 @@ Windows 版支持高 DPI 显示，字体、间距、列表行高和窗口大小�
 | [config.example.json](config.example.json) | 不含个人密钥的配置示例 |
 | [llms.txt](llms.txt) | 公开的英文项目摘要与文档、源码索引 |
 
-[报告问题](https://github.com/Marco0431/telegram-automation-gui/issues/new?template=bug_report.md) 时，请写明系统、Python 版本、界面语言、使用的功能页、复现步骤与脱敏后的错误。翻译不清楚、设置步骤难找或按钮含义不明确，都欢迎反馈；也欢迎文档修正 PR。
+[报告问题](https://github.com/Marco0431/telegram-automation-gui/issues/new?template=bug_report.md) 时，请写明系统、软件版本、界面语言、使用的功能页、复现步骤与脱敏后的错误；源码运行时再附上 Python 版本。翻译不清楚、设置步骤难找或按钮含义不明确，都欢迎反馈；也欢迎文档修正 PR。
 
 当前仓库没有提供 `LICENSE` 文件；公开源码不代表已明确授予开放源码许可。需要复制、分发或商用时，请先向维护者确认许可。

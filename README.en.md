@@ -2,42 +2,37 @@
 
 [简体中文](README.md) · **English**
 
-Connect a Telegram account, select groups, schedule daily check-ins, and follow activity in one desktop window. Enable scheduled messages or AI replies when needed. Built with **Python, Telethon, and Tkinter**, with **English and Chinese interfaces**, using a personal Telegram account (userbot).
+Connect a Telegram account, select groups, schedule daily check-ins, and follow activity in one desktop window. Enable scheduled messages or AI replies when needed. Supports **English and Chinese interfaces** and **4K/high DPI displays**, using a personal Telegram account (userbot).
 
-[Quick start](#quick-start) · [First run](#first-run) · [Language and saving](#language-and-saving) · [Troubleshooting](#troubleshooting) · [Report a problem](https://github.com/Marco0431/telegram-automation-gui/issues/new/choose)
+**[Download Windows EXE](https://github.com/Marco0431/telegram-automation-gui/releases/latest/download/TelegramAutomation-Windows-x64.exe)** · [Release notes](https://github.com/Marco0431/telegram-automation-gui/releases) · [Quick start](#quick-start) · [Run from source](#run-from-source-optional) · [Report a problem](https://github.com/Marco0431/telegram-automation-gui/issues/new/choose)
 
-This is a source-based desktop app for people whose groups permit automation. Login uses your Telegram application's `api_id` and `api_hash`, not a BotFather bot token.
+**Windows 64-bit: download and double-click. No Python or Git installation required.** Executables are available under Releases; this repository contains the source code.
 
 ## Interface preview
 
+<a href="docs/media/telegram-tour.gif"><img src="docs/media/telegram-tour.gif" width="960" alt="Telegram Automation walkthrough: connection, task settings, Chinese interface, and AI configuration"></a>
+
 <table>
-  <tr><th>Connection in English</th><th>The task after switching to Chinese</th></tr>
   <tr>
-    <td><a href="docs/media/telegram-english.png"><img src="docs/media/telegram-english.png" width="440" alt="English Connection page with empty Telegram credentials and the proxy disabled"></a></td>
-    <td><a href="docs/media/telegram-chinese.png"><img src="docs/media/telegram-chinese.png" width="440" alt="Chinese Daily check-in page preserving the example group and command after switching languages"></a></td>
+    <td width="50%"><strong>Connect your account</strong><br>Telegram credentials and optional proxy settings in one place.<br><a href="docs/media/telegram-english.png"><img src="docs/media/telegram-english.png" width="460" alt="English Connection page with Telegram API ID, API hash, and optional proxy settings"></a></td>
+    <td width="50%"><strong>Configure each task</strong><br>Keep target groups, time, and commands together.<br><a href="docs/media/telegram-tasks.png"><img src="docs/media/telegram-tasks.png" width="460" alt="English Daily check-in page with an example group selected, time, and check-in command"></a></td>
+  </tr>
+  <tr>
+    <td><strong>Switch languages instantly</strong><br>Keep your task edits when switching between English and Chinese.<br><a href="docs/media/telegram-chinese.png"><img src="docs/media/telegram-chinese.png" width="460" alt="Chinese Daily check-in page preserving the selected example group and command"></a></td>
+    <td><strong>Configure AI once</strong><br>Endpoint, key, model, and connection test together.<br><a href="docs/media/telegram-ai.png"><img src="docs/media/telegram-ai.png" width="460" alt="Chinese AI connection page with endpoint, model ID, and Test current connection button"></a></td>
   </tr>
 </table>
 
-Click a screenshot for its full size. The [English task page](docs/media/telegram-tasks.png) shows the same settings; the group selection and custom command survive the language switch.
-
-![A tour of Connection in English, Daily check-in in English, and the same task in Chinese](docs/media/telegram-tour.gif)
-
-These are **offline previews** of the actual native UI. The group marked `example` is demo data, and `/checkin` is only an example command. Telegram is not signed in, no group messages or AI requests are sent, and all tasks are disabled.
+Click an image for the full size. These are offline demonstrations of the actual interface using example groups, without connecting to Telegram, sending messages, or calling an AI provider.
 
 ## Quick start
 
-You need Python 3, Tkinter, and a Telegram account. Sign in at Telegram's official [my.telegram.org](https://my.telegram.org), open **API development tools**, and create an application to obtain your own `api_id` and `api_hash`. Check-ins and the fixed message pool do not require an AI service.
+1. **[Download TelegramAutomation-Windows-x64.exe](https://github.com/Marco0431/telegram-automation-gui/releases/latest/download/TelegramAutomation-Windows-x64.exe)** and double-click it.
+2. Prepare your Telegram account and get your own `api_id` / `api_hash` from **API development tools** at the official [my.telegram.org](https://my.telegram.org). Follow First run below to connect.
 
-```bash
-git clone https://github.com/Marco0431/telegram-automation-gui.git
-cd telegram-automation-gui
-python -m pip install -r requirements.txt
-python main.py
-```
+Settings and login sessions are saved automatically beside the EXE; no configuration file needs to be created manually. To update, fully quit the app, replace the EXE, and keep `config.json` and `userbot.session` in the same folder.
 
-Without Git, use **Code → Download ZIP**, extract the files, and run the last two commands in that directory. Run `python -m tkinter` to check Tkinter; install it through your Python distribution or system package manager if missing. You can open the GUI without signing in to Telegram or providing an AI key.
-
-You do not need to copy a configuration template to start. [config.py](config.py) defines runtime defaults; [config.example.json](config.example.json) is a reference. Review its proxy, task switches, and provider fields before using it.
+Basic check-ins and saved messages do not need an AI service. Add a provider endpoint and key only when you want AI features. Login uses a personal account's phone number and verification code, plus its two-step verification password when enabled; it does not use a BotFather bot token.
 
 A fresh configuration disables all tasks and the proxy, with an empty message pool. Enter your own commands or messages before enabling the tasks you need. Upgrading preserves existing task selections and text.
 
@@ -82,10 +77,6 @@ On Windows, the app supports high DPI displays and adjusts fonts, spacing, list 
 
 The **AI connection** page contains provider settings shared by scheduled AI messages and AI replies. Requests use the OpenAI Python SDK's Chat Completions interface.
 
-<a href="docs/media/telegram-ai.png"><img src="docs/media/telegram-ai.png" width="720" alt="AI connection page in Chinese, showing the endpoint, model ID, and test button with an empty API key"></a>
-
-Offline configuration preview: no key is entered and no test request is sent. Click for the full-size screenshot.
-
 | Field | Value |
 | --- | --- |
 | Base URL | Your provider's OpenAI-compatible endpoint, such as `https://api.deepseek.com/v1` |
@@ -100,7 +91,7 @@ The built-in prompts request concise, natural English for the English interface 
 
 | Symptom | What to check |
 | --- | --- |
-| `No module named tkinter` | Run `python -m tkinter`; install Tkinter for the Python environment you are using. |
+| `No module named tkinter` when running from source | Run `python -m tkinter`; install Tkinter for your Python environment. The Windows EXE does not require a separate Python installation. |
 | Connection failed | Check the proxy type, address, and port under Connection, or disable the proxy if it is unnecessary. |
 | Empty group selector | Complete Telegram login first, then open the task's group selector; refresh the list if necessary. |
 | Logged in but no tasks run | Check the task's enable switch and selected groups, select Save & start, and read Activity. |
@@ -117,6 +108,26 @@ The built-in prompts request concise, natural English for the English interface 
 - Logs may contain phone numbers, account identifiers, group names, message text, or provider errors. Share only relevant, redacted error excerpts; do not upload `config.json`, `*.session`, or complete logs.
 - Use automation only where the group permits it and follow Telegram's terms and group rules. Frequent automated messages may trigger rate limits, account restrictions, or moderator action; interval settings do not guarantee otherwise.
 
+## Run from source (optional)
+
+<details>
+<summary>For developers and users who prefer running Python source</summary>
+
+You need Python 3 and Tkinter. Download this repository as a source ZIP, or use Git:
+
+```bash
+git clone https://github.com/Marco0431/telegram-automation-gui.git
+cd telegram-automation-gui
+python -m pip install -r requirements.txt
+python main.py
+```
+
+For a ZIP, extract it and run the last two commands in the source directory. Use `python -m tkinter` to check Tkinter; install it through your Python distribution or system package manager if missing.
+
+No configuration template needs to be copied. [config.py](config.py) defines runtime defaults; [config.example.json](config.example.json) is a reference. When running from source, configuration and session files are stored in the project directory; do not commit them to Git.
+
+</details>
+
 ## Files and feedback
 
 | File | Contents |
@@ -131,6 +142,6 @@ The built-in prompts request concise, natural English for the English interface 
 | [config.example.json](config.example.json) | Example configuration without personal credentials |
 | [llms.txt](llms.txt) | Public English project summary and documentation/source index |
 
-[Report a problem](https://github.com/Marco0431/telegram-automation-gui/issues/new?template=bug_report.md) with your OS, Python version, interface language, relevant page, reproduction steps, and a redacted error. Translation corrections and feedback about confusing settings or buttons are welcome, as are documentation pull requests.
+[Report a problem](https://github.com/Marco0431/telegram-automation-gui/issues/new?template=bug_report.md) with your OS, app version, interface language, relevant page, reproduction steps, and a redacted error. Include your Python version if running from source. Translation corrections and feedback about confusing settings or buttons are welcome, as are documentation pull requests.
 
 No `LICENSE` file is currently provided. Public source availability does not establish an open-source license; ask the maintainer about permission before copying, distributing, or commercial reuse.
